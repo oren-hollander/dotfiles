@@ -2,7 +2,7 @@ local wezterm = require("wezterm")
 
 -- Rotate between these:
 local IMAGES = {
-  "/Users/orenhollander/Pictures/bg.jpg",
+  wezterm.config_dir .. "/assets/bg.jpg",
 }
 
 local ROTATE_SECONDS = 5 * 60 -- <-- set to 60 to test; change to 5*60 for 5 minutes
