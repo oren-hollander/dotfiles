@@ -39,6 +39,7 @@ local config = {
   enable_tab_bar = false,
   window_close_confirmation = "NeverPrompt",
   window_decorations = "RESIZE",
+  default_prog = { "tmux", "new-session", "-A", "-s", "main" },
   default_cursor_style = "BlinkingBar",
   color_scheme = "Nord (Gogh)",
   font = wezterm.font("JetBrains Mono", { weight = "DemiBold", stretch = "Normal", style = "Italic" }),
