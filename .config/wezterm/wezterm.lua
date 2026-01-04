@@ -1,5 +1,17 @@
 local wezterm = require("wezterm")
 
+local function tmux_default_prog()
+  local shell = os.getenv("SHELL") or "/bin/zsh"
+  local tmux_cmd = "PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; " ..
+    "if [ -n \"$TMUX_BIN\" ] && [ -x \"$TMUX_BIN\" ]; then " ..
+    "exec \"$TMUX_BIN\" new-session -A -s main; " ..
+    "elif command -v tmux >/dev/null 2>&1; then " ..
+    "exec tmux new-session -A -s main; " ..
+    "else exec " .. shell .. " -l; fi"
+
+  return { shell, "-lc", tmux_cmd }
+end
+
 -- Rotate between these:
 local IMAGES = {
   wezterm.config_dir .. "/assets/bg.jpg",
@@ -39,7 +51,6 @@ local config = {
   enable_tab_bar = false,
   window_close_confirmation = "NeverPrompt",
   window_decorations = "RESIZE",
-  default_prog = { "tmux", "new-session", "-A", "-s", "main" },
   default_cursor_style = "BlinkingBar",
   color_scheme = "Nord (Gogh)",
   font = wezterm.font("JetBrains Mono", { weight = "DemiBold", stretch = "Normal", style = "Italic" }),
@@ -56,5 +67,7 @@ local config = {
     bottom = 0,
   },
 }
+
+config.default_prog = tmux_default_prog()
 
 return config
