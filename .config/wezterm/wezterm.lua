@@ -58,7 +58,7 @@ local config = {
 
   -- Use the current image
   background = make_background(IMAGES[wezterm.GLOBAL.bg_idx]),
-  text_background_opacity = 0.0,
+  text_background_opacity = 1.0,
 
   window_padding = {
     left = 3,
