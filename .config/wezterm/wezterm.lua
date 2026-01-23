@@ -12,6 +12,39 @@ local function tmux_default_prog()
   return { shell, "-lc", tmux_cmd }
 end
 
+local function cwd_from_uri(cwd_uri)
+  if not cwd_uri then
+    return nil
+  end
+
+  if type(cwd_uri) == "table" and cwd_uri.file_path then
+    return cwd_uri.file_path
+  end
+
+  if type(cwd_uri) == "userdata" and cwd_uri.file_path then
+    return cwd_uri.file_path
+  end
+
+  if type(cwd_uri) == "string" then
+    return cwd_uri:gsub("^file://[^/]*", "")
+  end
+
+  return nil
+end
+
+wezterm.on("format-window-title", function(tab, pane, tabs, panes, config)
+  local cwd = cwd_from_uri(pane:get_current_working_dir())
+  if cwd then
+    local home = wezterm.home_dir
+    if home and cwd:sub(1, #home) == home then
+      cwd = "~" .. cwd:sub(#home + 1)
+    end
+    return cwd
+  end
+
+  return pane:get_title()
+end)
+
 -- Rotate between these:
 local IMAGES = {
   wezterm.config_dir .. "/assets/bg.jpg",
@@ -69,7 +102,8 @@ local config = {
   },
   enable_tab_bar = false,
   window_close_confirmation = "NeverPrompt",
-  window_decorations = "RESIZE",
+  -- Padding doesn't create a draggable region; enable a minimal title bar.
+  window_decorations = "RESIZE|TITLE",
   default_cursor_style = "BlinkingBar",
   color_scheme = "Nord (Gogh)",
   font = wezterm.font("JetBrains Mono", { weight = "DemiBold", stretch = "Normal", style = "Italic" }),
@@ -82,7 +116,7 @@ local config = {
   window_padding = {
     left = 3,
     right = 3,
-    top = 0,
+    top = 10,
     bottom = 0,
   },
 }
