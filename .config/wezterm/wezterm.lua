@@ -48,6 +48,25 @@ end)
 
 local config = {
   automatically_reload_config = true,
+  -- Enable CSI u key encoding for modifier+key combinations
+  enable_csi_u_key_encoding = true,
+  -- Treat Option as Alt/Meta so it doesn't trigger macOS shortcuts
+  send_composed_key_when_left_alt_is_pressed = false,
+  send_composed_key_when_right_alt_is_pressed = false,
+  keys = {
+    -- Shift+Enter sends CSI u sequence for newline insertion
+    {
+      key = "Return",
+      mods = "SHIFT",
+      action = wezterm.action { SendString = string.char(27) .. "[13;2u" },
+    },
+    -- Option+Enter sends CSI u sequence (overrides default fullscreen toggle)
+    {
+      key = "Return",
+      mods = "ALT",
+      action = wezterm.action { SendString = string.char(27) .. "[13;3u" },
+    },
+  },
   enable_tab_bar = false,
   window_close_confirmation = "NeverPrompt",
   window_decorations = "RESIZE",
