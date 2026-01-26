@@ -69,7 +69,7 @@ local config = {
   },
   enable_tab_bar = false,
   window_close_confirmation = "NeverPrompt",
-  window_decorations = "RESIZE",
+  window_decorations = "TITLE | RESIZE",
   default_cursor_style = "BlinkingBar",
   color_scheme = "Nord (Gogh)",
   font = wezterm.font("JetBrains Mono", { weight = "DemiBold", stretch = "Normal", style = "Italic" }),
