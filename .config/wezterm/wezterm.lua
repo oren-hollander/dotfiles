@@ -103,7 +103,7 @@ local config = {
   enable_tab_bar = false,
   window_close_confirmation = "NeverPrompt",
   -- Padding doesn't create a draggable region; enable a minimal title bar.
-  window_decorations = "RESIZE|TITLE",
+  window_decorations = "TITLE | RESIZE|TITLE",
   default_cursor_style = "BlinkingBar",
   color_scheme = "Nord (Gogh)",
   font = wezterm.font("JetBrains Mono", { weight = "DemiBold", stretch = "Normal", style = "Italic" }),

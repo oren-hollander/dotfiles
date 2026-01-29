@@ -9,7 +9,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = { "williamboman/mason.nvim" },
     opts = {
-      ensure_installed = { "pyright", "tsserver", "eslint", "lua_ls" },
+      ensure_installed = { "pyright", "ts_ls", "eslint", "lua_ls" },
       automatic_installation = true,
     },
   },
@@ -21,61 +21,64 @@ return {
       "hrsh7th/cmp-nvim-lsp",
     },
     config = function()
-      local lspconfig = require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-      local on_attach = function(_, bufnr)
-        local map = function(mode, lhs, rhs, desc)
-          vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
-        end
+      -- Set up keymaps when LSP attaches
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local bufnr = args.buf
+          local map = function(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
+          end
 
-        map("n", "gd", vim.lsp.buf.definition, "LSP definition")
-        map("n", "gr", vim.lsp.buf.references, "LSP references")
-        map("n", "gI", vim.lsp.buf.implementation, "LSP implementation")
-        map("n", "K", vim.lsp.buf.hover, "LSP hover")
-        map("n", "<leader>rn", vim.lsp.buf.rename, "LSP rename")
-        map("n", "<leader>ca", vim.lsp.buf.code_action, "LSP code action")
-        map("n", "<leader>f", function()
-          require("conform").format({ lsp_fallback = true })
-        end, "Format buffer")
+          map("n", "gd", vim.lsp.buf.definition, "LSP definition")
+          map("n", "gr", vim.lsp.buf.references, "LSP references")
+          map("n", "gI", vim.lsp.buf.implementation, "LSP implementation")
+          map("n", "K", vim.lsp.buf.hover, "LSP hover")
+          map("n", "<leader>rn", vim.lsp.buf.rename, "LSP rename")
+          map("n", "<leader>ca", vim.lsp.buf.code_action, "LSP code action")
+          map("n", "<leader>f", function()
+            require("conform").format({ lsp_fallback = true })
+          end, "Format buffer")
 
-        map("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
-        map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
-        map("n", "<leader>fd", function()
-          vim.diagnostic.open_float({ border = "rounded" })
-        end, "Diagnostics float")
-      end
-
-      lspconfig.pyright.setup({
-        capabilities = capabilities,
-        on_attach = on_attach,
-      })
-
-      lspconfig.tsserver.setup({
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-          client.server_capabilities.documentFormattingProvider = false
-          on_attach(client, bufnr)
+          map("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
+          map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+          map("n", "<leader>fd", function()
+            vim.diagnostic.open_float({ border = "rounded" })
+          end, "Diagnostics float")
         end,
       })
 
-      lspconfig.eslint.setup({
+      -- Configure LSP servers using vim.lsp.config (Neovim 0.11+)
+      vim.lsp.config("pyright", {
         capabilities = capabilities,
-        on_attach = function(client, bufnr)
+      })
+
+      vim.lsp.config("ts_ls", {
+        capabilities = capabilities,
+        on_attach = function(client)
           client.server_capabilities.documentFormattingProvider = false
-          on_attach(client, bufnr)
         end,
       })
 
-      lspconfig.lua_ls.setup({
+      vim.lsp.config("eslint", {
         capabilities = capabilities,
-        on_attach = on_attach,
+        on_attach = function(client)
+          client.server_capabilities.documentFormattingProvider = false
+        end,
+      })
+
+      vim.lsp.config("lua_ls", {
+        capabilities = capabilities,
         settings = {
           Lua = {
             diagnostics = { globals = { "vim" } },
           },
         },
       })
+
+      -- Enable the servers
+      vim.lsp.enable({ "pyright", "ts_ls", "eslint", "lua_ls" })
     end,
   },
   {
